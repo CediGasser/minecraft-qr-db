@@ -1,12 +1,15 @@
 import qrcode
 import numpy
 from mcrcon import MCRcon
+
+
 class Server:
     def __init__(self):
         self.rcon_ip = "46.126.69.5"
         self.rcon_pw = "password123"
         self.max_qr_size = 49
         self.qr_border = 2
+
     def build_qr_code(self, matrix, pos):
         if len(matrix) > self.max_qr_size:
             print(f"QR-Code too big ({len(matrix)} x {len(matrix[0])})")
@@ -27,23 +30,29 @@ class Server:
                 print(mcr.command(f"say generated QR Code ({len(matrix)} x {len(matrix[0])}) at {x} {y} {z}"))
         except:
             print("Connection to server failed")
+
     def build_table_connection_qr(self, pos, table):
         Data = (pos, table)
         print(Data)
         qr_code = create_qr_matrix(Data)
         pos = (60, 60, 50)
         server.build_qr_code(qr_code, pos)
+
+
 qr_config = qrcode.QRCode(
     version=1,
     error_correction=qrcode.constants.ERROR_CORRECT_Q,
     box_size=1,
     border=0,
 )
+
+
 def create_qr_matrix(data):
     qr_config.add_data(data)
     image = qr_config.make_image(fill_color="black", back_color="white")
     matrix = numpy.array(image, dtype=numpy.uint8)
     return matrix
+
 
 # Main function
 if __name__ == '__main__':
