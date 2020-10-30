@@ -35,6 +35,7 @@ class Server:
         Data = (pos, table)
         print(Data)
         qr_code = create_qr_matrix(Data)
+        # Connection QR Code Coordinates
         pos = (60, 60, 50)
         server.build_qr_code(qr_code, pos)
 
@@ -61,13 +62,17 @@ if __name__ == '__main__':
         # User Input
         print("---------------- QR Code Creator ----------------")
         text = input("Enter Text-> ")
-        table = "InputWebseite"
-        # Create QR Code
+        # Input User from Website
+        table = "InputWebsite"
+        # Create QR Code Matrix
         pos = (100, 100, 50)
         qr_matrix = create_qr_matrix(text)
         print(qr_matrix)
         server = Server()
+        # Create Required QR-Codes
         if qr_matrix is not None:
             if len(qr_matrix) < server.max_qr_size:
+                # Build Main Connection QR
                 server.build_table_connection_qr(pos, table)
+            # Build Qr Code
             server.build_qr_code(qr_matrix, pos)
