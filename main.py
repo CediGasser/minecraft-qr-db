@@ -1,13 +1,58 @@
 import qrcode
 import numpy
 from mcrcon import MCRcon
+import PIL                      # needed for screenshot of qr-code
+
+
+class Player:
+    def __init__(self, connection, name):
+        self.connection = connection
+        self.name = name
+        # join server
+
+    def get_screen(self):
+        # returns screenshot of qr-code
+        pass
+
+
+    def tp(self, qr_coords):
+        # gets qr_position and calculates where to tp from there on
+        # tp itself to those calculated coords
+        pass
+
+
+class MCDatabase:
+    def __init__(self):
+        self.tables_table_pos = (0, 80, 0)
+        self.server = Server()
+
+    def get_qr_data(self, img):
+        # somehow gets data from image
+        pass
+
 
 class Server:
-    def __init__(self):
-        self.rcon_ip = "46.126.69.5"
-        self.rcon_pw = "password123"
+    def __init__(self, ip, pw):
+        self.rcon_ip = ip
+        self.rcon_pw = pw
         self.max_qr_size = 49
         self.qr_border = 2
+
+    def open(self):
+        # create rcon connection and store in self.connection
+        self.connection = MCRcon(self.rcon_ip, self.rcon_pw).open()
+        self.player = Player(self.connection)
+
+    def read_table(self, table_start_pos):
+        self.player.tp(table_start_pos)
+
+        while True:
+            screen = self.player.get_screen()
+            data = self.get_qr_data(screen)
+            yield data
+            x, y, z = table_start_pos
+            qr_pos = x, y, z - 20
+            self.player.tp(qr_pos)
 
     def build_qr_code(self, input, pos, table, built):
         # Create QR Matrix
@@ -34,7 +79,8 @@ class Server:
                 try:
                     x, y, z = pos
                     with MCRcon(self.rcon_ip, self.rcon_pw) as mcr:
-                        mcr.command(f"fill {x} {y} {z} {x} {y - self.max_qr_size - 2 * self.qr_border + 1} {z + self.max_qr_size + 2 * self.qr_border - 1} minecraft:white_concrete")
+                        mcr.command(
+                            f"fill {x} {y} {z} {x} {y - self.max_qr_size - 2 * self.qr_border + 1} {z + self.max_qr_size + 2 * self.qr_border - 1} minecraft:white_concrete")
                         for i in range(len(qr_matrix)):
                             for j in range(len(qr_matrix[i])):
                                 tmp_x = x + j + self.qr_border
@@ -45,7 +91,8 @@ class Server:
                                     resp = mcr.command(command)
                                     print(resp)
                         built = "0"
-                        print(mcr.command(f"say generated QR Code ({len(qr_matrix)} x {len(qr_matrix[0])}) at {x} {y} {z}"))
+                        print(mcr.command(
+                            f"say generated QR Code ({len(qr_matrix)} x {len(qr_matrix[0])}) at {x} {y} {z}"))
                 except:
                     print("Connection to server failed")
 
@@ -56,7 +103,6 @@ class Server:
         self.max_qr_size = 56
         pos = (60, 60, 50)
         server.build_qr_code(Data, pos, table, built="0")
-
 
 
 def create_qr_matrix(data):
@@ -85,6 +131,6 @@ if __name__ == '__main__':
         table = "InputWebsite"
         # Create QR Code Matrix
         pos = (100, 100, 50)
-        server = Server()
+        server = Server("46.126.69.5", "password123")
         # Build Qr Code
-        server.build_qr_code(text, pos, table, built = "1")
+        server.build_qr_code(text, pos, table, built="1")
