@@ -12,6 +12,8 @@ class Player:
 
     def get_screen(self):
         # returns screenshot of qr-code
+        img = 'qr.png'
+        MCDatabase(img)
         pass
 
 
@@ -27,7 +29,12 @@ class MCDatabase:
         self.server = Server()
 
     def get_qr_data(self, img):
-        # somehow gets data from image
+        # Get Date of Picture
+        self.decoded = qrcode.Decoder()
+        if self.decoded.decode(img):
+            print('result: ' + self.decoded.result)
+        else:
+            print('error: ' + self.decoded.error)
         pass
 
 
